@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Don’t Break the Chain
 
-## Getting Started
+A one-screen browser game: infer the hidden pattern, choose the next term before the clock runs out, and build the longest chain you can. All gameplay and the personal best stay in the browser; there is no game API or account.
 
-First, run the development server:
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev -- --hostname 0.0.0.0
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`. Use touch or a pointer to choose a tile, or press **A–D**. A wrong answer or timeout ends the run. The best chain is saved at `dbc.bestChain.v1` in localStorage, with an in-memory fallback if storage is blocked.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+npm run typecheck
+npm run lint
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
 
-## Learn More
+The browser tests expect the dev server at `http://localhost:3000` (or set `BASE_URL`). They exercise desktop and 375px mobile flows, keyboard input, replay, best-score persistence, timeout, and horizontal overflow.
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment and tuning
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`npm run build` writes a **static export** to `out/`. Serve that folder over HTTPS; no Next.js server, API routes, or database are needed. The five time limits are `12/10/8/6/4` seconds, and the family rotates after every three correct answers. Those defaults and the curated higher-tier puzzles should be reviewed with players before launch, especially color/size cues and advanced distractors.
